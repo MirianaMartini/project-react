@@ -5,17 +5,16 @@
  */
 import { useState } from 'react';
 import {
-  ArrowClockwiseIcon,
   BuildingsIcon,
   CheckCircleIcon,
   ClockIcon,
-  FunnelSimpleIcon,
   MagnifyingGlassIcon,
   TicketIcon,
   WarningIcon,
 } from '@phosphor-icons/react';
 import { TicketDashboardLayout } from './components/TicketDashboardLayout/TicketDashboardLayout';
 import { TicketDetail } from './components/TicketDetail/TicketDetail';
+import { TicketFilters } from './components/TicketFilters/TicketFilters';
 import { TicketList } from './components/TicketList/TicketList';
 import { tickets } from './tickets';
 import type { TicketStatusFilter } from './ticket.types';
@@ -58,7 +57,6 @@ export function TicketDashboard() {
     return matchesStatus && searchableText.includes(normalizedQuery);
   });
 
-  const hasActiveFilters = query !== '' || statusFilter !== 'tutti';
   const selectedTicket = tickets.find(
     (ticket) => ticket.id === selectedTicketId,
   );
@@ -69,63 +67,14 @@ export function TicketDashboard() {
   }
 
   const sidebar = (
-          <div
-            className="ticket-dashboard__filters"
-            aria-labelledby="filters-title"
-          >
-            <div className="ticket-dashboard__section-title">
-              <FunnelSimpleIcon size={20} weight="bold" aria-hidden="true" />
-              <h2 id="filters-title">Filtri</h2>
-            </div>
-
-            <label className="ticket-dashboard__field">
-              <span>Cerca nella coda</span>
-              <span className="ticket-dashboard__input-wrap">
-                <MagnifyingGlassIcon
-                  size={18}
-                  weight="bold"
-                  aria-hidden="true"
-                />
-                <input
-                  type="search"
-                  value={query}
-                  onChange={(event) => setQuery(event.target.value)}
-                  placeholder="ID, cliente o titolo"
-                />
-              </span>
-            </label>
-
-            <label className="ticket-dashboard__field">
-              <span>Stato</span>
-              <select
-                value={statusFilter}
-                onChange={(event) =>
-                  setStatusFilter(event.target.value as TicketStatusFilter)
-                }
-              >
-                <option value="tutti">Tutti gli stati</option>
-                <option value="nuovo">Nuovo</option>
-                <option value="in-lavorazione">In lavorazione</option>
-                <option value="in-attesa">In attesa</option>
-                <option value="risolto">Risolto</option>
-              </select>
-            </label>
-
-            <button
-              className="ticket-dashboard__reset"
-              type="button"
-              onClick={resetFilters}
-              disabled={!hasActiveFilters}
-            >
-              <ArrowClockwiseIcon size={18} weight="bold" aria-hidden="true" />
-              Reimposta filtri
-            </button>
-
-            <div className="ticket-dashboard__filter-note">
-              <strong>{visibleTickets.length}</strong>
-              <span>ticket nella vista corrente</span>
-            </div>
-          </div>
+    <TicketFilters
+      query={query}
+      status={statusFilter}
+      resultCount={visibleTickets.length}
+      onQueryChange={setQuery}
+      onStatusChange={setStatusFilter}
+      onReset={resetFilters}
+    />
   );
 
   const queue = (
