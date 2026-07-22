@@ -3,7 +3,6 @@
  * stato, dati derivati, filtri, lista e riepilogo vivono nello stesso file.
  * Lo starter funziona, mentre i TODO mostreranno come separare questi confini.
  */
-import { useState } from 'react';
 import {
   BuildingsIcon,
   CheckCircleIcon,
@@ -15,56 +14,24 @@ import {
 import { TicketDashboardLayout } from './components/TicketDashboardLayout/TicketDashboardLayout';
 import { TicketDetail } from './components/TicketDetail/TicketDetail';
 import { TicketFilters } from './components/TicketFilters/TicketFilters';
+import { useTicketDashboard } from './hooks/useTicketDashboard';
 import { TicketList } from './components/TicketList/TicketList';
 import { tickets } from './tickets';
-import type { TicketStatusFilter } from './ticket.types';
 import './TicketDashboard.scss';
 
 export function TicketDashboard() {
-  // Questi valori rappresentano stato reale perché cambiano dopo un'azione utente.
-  const [query, setQuery] = useState('');
-  const [statusFilter, setStatusFilter] =
-    useState<TicketStatusFilter>('tutti');
-  const [selectedTicketId, setSelectedTicketId] = useState(tickets[0].id);
-
-  // I conteggi derivano dalle fixture. Un secondo useState creerebbe una copia da sincronizzare.
-  const openTicketsCount = tickets.filter(
-    (ticket) => ticket.status !== 'risolto',
-  ).length;
-  const urgentTicketsCount = tickets.filter(
-    (ticket) => ticket.priority === 'critica' || ticket.priority === 'alta',
-  ).length;
-  const waitingTicketsCount = tickets.filter(
-    (ticket) => ticket.status === 'in-attesa',
-  ).length;
-
-  const normalizedQuery = query.trim().toLocaleLowerCase('it-IT');
-
-  // La lista visibile è derived state: gli input sono ticket, query e filtro.
-  const visibleTickets = tickets.filter((ticket) => {
-    const matchesStatus =
-      statusFilter === 'tutti' || ticket.status === statusFilter;
-    const searchableText = [
-      ticket.id,
-      ticket.title,
-      ticket.customer,
-      ticket.assignee,
-      ticket.description,
-    ]
-      .join(' ')
-      .toLocaleLowerCase('it-IT');
-
-    return matchesStatus && searchableText.includes(normalizedQuery);
-  });
-
-  const selectedTicket = tickets.find(
-    (ticket) => ticket.id === selectedTicketId,
-  );
-
-  function resetFilters() {
-    setQuery('');
-    setStatusFilter('tutti');
-  }
+  const {
+    query,
+    statusFilter,
+    selectedTicketId,
+    selectedTicket,
+    visibleTickets,
+    summary,
+    setQuery,
+    setStatusFilter,
+    selectTicket,
+    resetFilters,
+  } = useTicketDashboard(tickets);
 
   const sidebar = (
     <TicketFilters
@@ -94,7 +61,7 @@ export function TicketDashboard() {
               <TicketList
                 tickets={visibleTickets}
                 selectedTicketId={selectedTicketId}
-                onSelect={setSelectedTicketId}
+                onSelect={selectTicket}
               />
             ) : (
               <div className="ticket-dashboard__empty" role="status">
@@ -153,22 +120,22 @@ export function TicketDashboard() {
           <article>
             <TicketIcon size={20} weight="duotone" aria-hidden="true" />
             <span>Totali</span>
-            <strong>{tickets.length}</strong>
+            <strong>{summary.total}</strong>
           </article>
           <article>
             <ClockIcon size={20} weight="duotone" aria-hidden="true" />
             <span>Aperti</span>
-            <strong>{openTicketsCount}</strong>
+            <strong>{summary.open}</strong>
           </article>
           <article>
             <WarningIcon size={20} weight="duotone" aria-hidden="true" />
             <span>Alta priorità</span>
-            <strong>{urgentTicketsCount}</strong>
+            <strong>{summary.urgent}</strong>
           </article>
           <article>
             <CheckCircleIcon size={20} weight="duotone" aria-hidden="true" />
             <span>In attesa</span>
-            <strong>{waitingTicketsCount}</strong>
+            <strong>{summary.waiting}</strong>
           </article>
         </section>
 
