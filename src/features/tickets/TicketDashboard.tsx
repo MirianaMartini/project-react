@@ -14,6 +14,7 @@ import {
   TicketIcon,
   WarningIcon,
 } from '@phosphor-icons/react';
+import { TicketDashboardLayout } from './components/TicketDashboardLayout/TicketDashboardLayout';
 import { tickets } from './tickets';
 import type {
   TicketPriority,
@@ -90,67 +91,8 @@ export function TicketDashboard() {
     setStatusFilter('tutti');
   }
 
-  return (
-    <div className="ticket-dashboard">
-      <header className="ticket-dashboard__topbar">
-        <a className="ticket-dashboard__brand" href="#main-content">
-          <span className="ticket-dashboard__brand-mark" aria-hidden="true">
-            <BuildingsIcon size={20} weight="bold" />
-          </span>
-          <span>
-            <strong>Control Room</strong>
-            <small>Operations support</small>
-          </span>
-        </a>
-        <span className="ticket-dashboard__environment">
-          Ambiente didattico
-        </span>
-      </header>
-
-      <main id="main-content" className="ticket-dashboard__main">
-        <header className="ticket-dashboard__heading">
-          <div>
-            <p className="ticket-dashboard__context">Coda assistenza</p>
-            <h1>Operations Dashboard</h1>
-            <p>
-              Controlla le richieste aperte, filtra la coda e assegna la
-              priorità al prossimo intervento.
-            </p>
-          </div>
-          <div className="ticket-dashboard__selection" aria-live="polite">
-            <span>Ticket selezionato</span>
-            <strong>{selectedTicket?.id ?? 'Nessuno'}</strong>
-          </div>
-        </header>
-
-        <section
-          className="ticket-dashboard__metrics"
-          aria-label="Riepilogo ticket"
-        >
-          <article>
-            <TicketIcon size={20} weight="duotone" aria-hidden="true" />
-            <span>Totali</span>
-            <strong>{tickets.length}</strong>
-          </article>
-          <article>
-            <ClockIcon size={20} weight="duotone" aria-hidden="true" />
-            <span>Aperti</span>
-            <strong>{openTicketsCount}</strong>
-          </article>
-          <article>
-            <WarningIcon size={20} weight="duotone" aria-hidden="true" />
-            <span>Alta priorità</span>
-            <strong>{urgentTicketsCount}</strong>
-          </article>
-          <article>
-            <CheckCircleIcon size={20} weight="duotone" aria-hidden="true" />
-            <span>In attesa</span>
-            <strong>{waitingTicketsCount}</strong>
-          </article>
-        </section>
-
-        <div className="ticket-dashboard__workspace">
-          <aside
+  const sidebar = (
+          <div
             className="ticket-dashboard__filters"
             aria-labelledby="filters-title"
           >
@@ -206,8 +148,10 @@ export function TicketDashboard() {
               <strong>{visibleTickets.length}</strong>
               <span>ticket nella vista corrente</span>
             </div>
-          </aside>
+          </div>
+  );
 
+  const queue = (
           <section
             className="ticket-dashboard__queue"
             aria-labelledby="queue-title"
@@ -284,9 +228,71 @@ export function TicketDashboard() {
               </div>
             )}
           </section>
-        </div>
+  );
+
+  return (
+    <div className="ticket-dashboard">
+      <header className="ticket-dashboard__topbar">
+        <a className="ticket-dashboard__brand" href="#main-content">
+          <span className="ticket-dashboard__brand-mark" aria-hidden="true">
+            <BuildingsIcon size={20} weight="bold" />
+          </span>
+          <span>
+            <strong>Control Room</strong>
+            <small>Operations support</small>
+          </span>
+        </a>
+        <span className="ticket-dashboard__environment">
+          Ambiente didattico
+        </span>
+      </header>
+
+      <main id="main-content" className="ticket-dashboard__main">
+        <header className="ticket-dashboard__heading">
+          <div>
+            <p className="ticket-dashboard__context">Coda assistenza</p>
+            <h1>Operations Dashboard</h1>
+            <p>
+              Controlla le richieste aperte, filtra la coda e assegna la
+              priorità al prossimo intervento.
+            </p>
+          </div>
+          <div className="ticket-dashboard__selection" aria-live="polite">
+            <span>Ticket selezionato</span>
+            <strong>{selectedTicket?.id ?? 'Nessuno'}</strong>
+          </div>
+        </header>
+
+        <section
+          className="ticket-dashboard__metrics"
+          aria-label="Riepilogo ticket"
+        >
+          <article>
+            <TicketIcon size={20} weight="duotone" aria-hidden="true" />
+            <span>Totali</span>
+            <strong>{tickets.length}</strong>
+          </article>
+          <article>
+            <ClockIcon size={20} weight="duotone" aria-hidden="true" />
+            <span>Aperti</span>
+            <strong>{openTicketsCount}</strong>
+          </article>
+          <article>
+            <WarningIcon size={20} weight="duotone" aria-hidden="true" />
+            <span>Alta priorità</span>
+            <strong>{urgentTicketsCount}</strong>
+          </article>
+          <article>
+            <CheckCircleIcon size={20} weight="duotone" aria-hidden="true" />
+            <span>In attesa</span>
+            <strong>{waitingTicketsCount}</strong>
+          </article>
+        </section>
+
+        <TicketDashboardLayout sidebar={sidebar}>
+          {queue}
+        </TicketDashboardLayout>
       </main>
     </div>
   );
 }
-
