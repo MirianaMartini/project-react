@@ -15,34 +15,10 @@ import {
   WarningIcon,
 } from '@phosphor-icons/react';
 import { TicketDashboardLayout } from './components/TicketDashboardLayout/TicketDashboardLayout';
+import { TicketList } from './components/TicketList/TicketList';
 import { tickets } from './tickets';
-import type {
-  TicketPriority,
-  TicketStatus,
-  TicketStatusFilter,
-} from './ticket.types';
+import type { TicketStatusFilter } from './ticket.types';
 import './TicketDashboard.scss';
-
-const statusLabels: Record<TicketStatus, string> = {
-  nuovo: 'Nuovo',
-  'in-lavorazione': 'In lavorazione',
-  'in-attesa': 'In attesa',
-  risolto: 'Risolto',
-};
-
-const priorityLabels: Record<TicketPriority, string> = {
-  critica: 'Critica',
-  alta: 'Alta',
-  media: 'Media',
-  bassa: 'Bassa',
-};
-
-const dateFormatter = new Intl.DateTimeFormat('it-IT', {
-  day: '2-digit',
-  month: 'short',
-  hour: '2-digit',
-  minute: '2-digit',
-});
 
 export function TicketDashboard() {
   // Questi valori rappresentano stato reale perché cambiano dopo un'azione utente.
@@ -165,54 +141,11 @@ export function TicketDashboard() {
             </header>
 
             {visibleTickets.length > 0 ? (
-              <ul className="ticket-dashboard__ticket-list">
-                {visibleTickets.map((ticket) => {
-                  const isSelected = ticket.id === selectedTicketId;
-
-                  return (
-                    <li key={ticket.id}>
-                      <button
-                        className="ticket-dashboard__ticket"
-                        data-selected={isSelected}
-                        type="button"
-                        aria-pressed={isSelected}
-                        onClick={() => setSelectedTicketId(ticket.id)}
-                      >
-                        <span className="ticket-dashboard__ticket-main">
-                          <span className="ticket-dashboard__ticket-meta">
-                            <strong>{ticket.id}</strong>
-                            <span
-                              className="ticket-dashboard__status"
-                              data-status={ticket.status}
-                            >
-                              {statusLabels[ticket.status]}
-                            </span>
-                          </span>
-                          <strong className="ticket-dashboard__ticket-title">
-                            {ticket.title}
-                          </strong>
-                          <span className="ticket-dashboard__ticket-customer">
-                            {ticket.customer}
-                          </span>
-                        </span>
-
-                        <span className="ticket-dashboard__ticket-side">
-                          <span
-                            className="ticket-dashboard__priority"
-                            data-priority={ticket.priority}
-                          >
-                            {priorityLabels[ticket.priority]}
-                          </span>
-                          <span>{ticket.assignee}</span>
-                          <time dateTime={ticket.updatedAt}>
-                            {dateFormatter.format(new Date(ticket.updatedAt))}
-                          </time>
-                        </span>
-                      </button>
-                    </li>
-                  );
-                })}
-              </ul>
+              <TicketList
+                tickets={visibleTickets}
+                selectedTicketId={selectedTicketId}
+                onSelect={setSelectedTicketId}
+              />
             ) : (
               <div className="ticket-dashboard__empty" role="status">
                 <MagnifyingGlassIcon
