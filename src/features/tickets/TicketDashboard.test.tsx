@@ -4,11 +4,11 @@
  */
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { OperationsDashboard } from './OperationsDashboard';
+import { TicketDashboard } from './TicketDashboard';
 
-describe('OperationsDashboard', () => {
+describe('TicketDashboard', () => {
   it('mostra il riepilogo e la coda iniziale', () => {
-    render(<OperationsDashboard />);
+    render(<TicketDashboard />);
 
     expect(
       screen.getByRole('heading', { name: 'Operations Dashboard' }),
@@ -23,7 +23,7 @@ describe('OperationsDashboard', () => {
 
   it('filtra i ticket usando la ricerca controllata', async () => {
     const user = userEvent.setup();
-    render(<OperationsDashboard />);
+    render(<TicketDashboard />);
 
     await user.type(screen.getByRole('searchbox'), 'Fonderie Lario');
 
@@ -37,7 +37,7 @@ describe('OperationsDashboard', () => {
 
   it('combina filtro per stato e reset', async () => {
     const user = userEvent.setup();
-    render(<OperationsDashboard />);
+    render(<TicketDashboard />);
 
     await user.selectOptions(screen.getByLabelText('Stato'), 'in-attesa');
     expect(screen.getByText('3 risultati')).toBeInTheDocument();
@@ -48,7 +48,7 @@ describe('OperationsDashboard', () => {
 
   it('aggiorna la selezione senza dipendere dalla posizione in lista', async () => {
     const user = userEvent.setup();
-    render(<OperationsDashboard />);
+    render(<TicketDashboard />);
     const ticketButton = screen.getByRole('button', {
       name: /OPS-1839.*Doppia notifica per le richieste approvate/i,
     });
@@ -60,7 +60,7 @@ describe('OperationsDashboard', () => {
 
   it('mostra un empty state e permette di tornare alla coda', async () => {
     const user = userEvent.setup();
-    render(<OperationsDashboard />);
+    render(<TicketDashboard />);
 
     await user.type(screen.getByRole('searchbox'), 'testo senza risultati');
     expect(screen.getByRole('status')).toHaveTextContent('Nessun ticket trovato');

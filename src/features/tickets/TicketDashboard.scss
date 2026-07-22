@@ -2,9 +2,9 @@
  * Il foglio usa un namespace unico per tenere gli stili vicini al componente.
  * I breakpoint mostrano in modo esplicito il passaggio a una colonna.
  */
-@use '../styles/tokens' as t;
+@use '../../styles/tokens' as t;
 
-.operations-dashboard {
+.ticket-dashboard {
   min-height: 100dvh;
   background: t.$color-slate-50;
 
@@ -81,7 +81,7 @@
       letter-spacing: -0.04em;
     }
 
-    p:not(.operations-dashboard__context) {
+    p:not(.ticket-dashboard__context) {
       max-width: 42rem;
       margin: 0;
       color: t.$color-slate-600;
@@ -487,7 +487,7 @@
 }
 
 @media (max-width: 64rem) {
-  .operations-dashboard {
+  .ticket-dashboard {
     &__metrics {
       grid-template-columns: repeat(2, minmax(0, 1fr));
 
@@ -507,7 +507,7 @@
 }
 
 @media (max-width: 48rem) {
-  .operations-dashboard {
+  .ticket-dashboard {
     &__topbar,
     &__heading,
     &__queue-header {
@@ -533,13 +533,13 @@
       grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: t.$space-4;
 
-      .operations-dashboard__section-title,
-      .operations-dashboard__filter-note {
+      .ticket-dashboard__section-title,
+      .ticket-dashboard__filter-note {
         grid-column: 1 / -1;
         margin: 0;
       }
 
-      .operations-dashboard__field {
+      .ticket-dashboard__field {
         margin: 0;
       }
     }
@@ -547,7 +547,7 @@
 }
 
 @media (max-width: 36rem) {
-  .operations-dashboard {
+  .ticket-dashboard {
     &__environment {
       display: none;
     }
@@ -569,8 +569,8 @@
     }
 
     &__filters {
-      .operations-dashboard__field,
-      .operations-dashboard__reset {
+      .ticket-dashboard__field,
+      .ticket-dashboard__reset {
         grid-column: 1;
       }
     }

@@ -1,5 +1,5 @@
 /**
- * OperationsDashboard contiene intenzionalmente più responsabilità:
+ * TicketDashboard contiene intenzionalmente più responsabilità:
  * stato, dati derivati, filtri, lista e riepilogo vivono nello stesso file.
  * Lo starter funziona, mentre i TODO mostreranno come separare questi confini.
  */
@@ -20,7 +20,7 @@ import type {
   TicketStatus,
   TicketStatusFilter,
 } from './ticket.types';
-import './OperationsDashboard.scss';
+import './TicketDashboard.scss';
 
 const statusLabels: Record<TicketStatus, string> = {
   nuovo: 'Nuovo',
@@ -43,7 +43,7 @@ const dateFormatter = new Intl.DateTimeFormat('it-IT', {
   minute: '2-digit',
 });
 
-export function OperationsDashboard() {
+export function TicketDashboard() {
   // Questi valori rappresentano stato reale perché cambiano dopo un'azione utente.
   const [query, setQuery] = useState('');
   const [statusFilter, setStatusFilter] =
@@ -91,10 +91,10 @@ export function OperationsDashboard() {
   }
 
   return (
-    <div className="operations-dashboard">
-      <header className="operations-dashboard__topbar">
-        <a className="operations-dashboard__brand" href="#main-content">
-          <span className="operations-dashboard__brand-mark" aria-hidden="true">
+    <div className="ticket-dashboard">
+      <header className="ticket-dashboard__topbar">
+        <a className="ticket-dashboard__brand" href="#main-content">
+          <span className="ticket-dashboard__brand-mark" aria-hidden="true">
             <BuildingsIcon size={20} weight="bold" />
           </span>
           <span>
@@ -102,29 +102,29 @@ export function OperationsDashboard() {
             <small>Operations support</small>
           </span>
         </a>
-        <span className="operations-dashboard__environment">
+        <span className="ticket-dashboard__environment">
           Ambiente didattico
         </span>
       </header>
 
-      <main id="main-content" className="operations-dashboard__main">
-        <header className="operations-dashboard__heading">
+      <main id="main-content" className="ticket-dashboard__main">
+        <header className="ticket-dashboard__heading">
           <div>
-            <p className="operations-dashboard__context">Coda assistenza</p>
+            <p className="ticket-dashboard__context">Coda assistenza</p>
             <h1>Operations Dashboard</h1>
             <p>
               Controlla le richieste aperte, filtra la coda e assegna la
               priorità al prossimo intervento.
             </p>
           </div>
-          <div className="operations-dashboard__selection" aria-live="polite">
+          <div className="ticket-dashboard__selection" aria-live="polite">
             <span>Ticket selezionato</span>
             <strong>{selectedTicket?.id ?? 'Nessuno'}</strong>
           </div>
         </header>
 
         <section
-          className="operations-dashboard__metrics"
+          className="ticket-dashboard__metrics"
           aria-label="Riepilogo ticket"
         >
           <article>
@@ -149,19 +149,19 @@ export function OperationsDashboard() {
           </article>
         </section>
 
-        <div className="operations-dashboard__workspace">
+        <div className="ticket-dashboard__workspace">
           <aside
-            className="operations-dashboard__filters"
+            className="ticket-dashboard__filters"
             aria-labelledby="filters-title"
           >
-            <div className="operations-dashboard__section-title">
+            <div className="ticket-dashboard__section-title">
               <FunnelSimpleIcon size={20} weight="bold" aria-hidden="true" />
               <h2 id="filters-title">Filtri</h2>
             </div>
 
-            <label className="operations-dashboard__field">
+            <label className="ticket-dashboard__field">
               <span>Cerca nella coda</span>
-              <span className="operations-dashboard__input-wrap">
+              <span className="ticket-dashboard__input-wrap">
                 <MagnifyingGlassIcon
                   size={18}
                   weight="bold"
@@ -176,7 +176,7 @@ export function OperationsDashboard() {
               </span>
             </label>
 
-            <label className="operations-dashboard__field">
+            <label className="ticket-dashboard__field">
               <span>Stato</span>
               <select
                 value={statusFilter}
@@ -193,7 +193,7 @@ export function OperationsDashboard() {
             </label>
 
             <button
-              className="operations-dashboard__reset"
+              className="ticket-dashboard__reset"
               type="button"
               onClick={resetFilters}
               disabled={!hasActiveFilters}
@@ -202,17 +202,17 @@ export function OperationsDashboard() {
               Reimposta filtri
             </button>
 
-            <div className="operations-dashboard__filter-note">
+            <div className="ticket-dashboard__filter-note">
               <strong>{visibleTickets.length}</strong>
               <span>ticket nella vista corrente</span>
             </div>
           </aside>
 
           <section
-            className="operations-dashboard__queue"
+            className="ticket-dashboard__queue"
             aria-labelledby="queue-title"
           >
-            <header className="operations-dashboard__queue-header">
+            <header className="ticket-dashboard__queue-header">
               <div>
                 <h2 id="queue-title">Coda ticket</h2>
                 <p>Ordine di aggiornamento, dal più recente.</p>
@@ -221,40 +221,40 @@ export function OperationsDashboard() {
             </header>
 
             {visibleTickets.length > 0 ? (
-              <ul className="operations-dashboard__ticket-list">
+              <ul className="ticket-dashboard__ticket-list">
                 {visibleTickets.map((ticket) => {
                   const isSelected = ticket.id === selectedTicketId;
 
                   return (
                     <li key={ticket.id}>
                       <button
-                        className="operations-dashboard__ticket"
+                        className="ticket-dashboard__ticket"
                         data-selected={isSelected}
                         type="button"
                         aria-pressed={isSelected}
                         onClick={() => setSelectedTicketId(ticket.id)}
                       >
-                        <span className="operations-dashboard__ticket-main">
-                          <span className="operations-dashboard__ticket-meta">
+                        <span className="ticket-dashboard__ticket-main">
+                          <span className="ticket-dashboard__ticket-meta">
                             <strong>{ticket.id}</strong>
                             <span
-                              className="operations-dashboard__status"
+                              className="ticket-dashboard__status"
                               data-status={ticket.status}
                             >
                               {statusLabels[ticket.status]}
                             </span>
                           </span>
-                          <strong className="operations-dashboard__ticket-title">
+                          <strong className="ticket-dashboard__ticket-title">
                             {ticket.title}
                           </strong>
-                          <span className="operations-dashboard__ticket-customer">
+                          <span className="ticket-dashboard__ticket-customer">
                             {ticket.customer}
                           </span>
                         </span>
 
-                        <span className="operations-dashboard__ticket-side">
+                        <span className="ticket-dashboard__ticket-side">
                           <span
-                            className="operations-dashboard__priority"
+                            className="ticket-dashboard__priority"
                             data-priority={ticket.priority}
                           >
                             {priorityLabels[ticket.priority]}
@@ -270,7 +270,7 @@ export function OperationsDashboard() {
                 })}
               </ul>
             ) : (
-              <div className="operations-dashboard__empty" role="status">
+              <div className="ticket-dashboard__empty" role="status">
                 <MagnifyingGlassIcon
                   size={28}
                   weight="duotone"

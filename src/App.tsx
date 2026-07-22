@@ -1,10 +1,10 @@
 /**
  * App rappresenta il punto di ingresso dell'interfaccia.
- * Nel TODO 01 importerà la feature tickets dalla sua API pubblica.
+ * Importa la feature tickets dalla sua API pubblica.
  */
-import { OperationsDashboard } from './dashboard/OperationsDashboard';
+import { TicketDashboard } from './features/tickets';
 
 export function App() {
-  return <OperationsDashboard />;
+  return <TicketDashboard />;
 }
 
