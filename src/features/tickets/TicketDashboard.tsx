@@ -15,6 +15,7 @@ import {
   WarningIcon,
 } from '@phosphor-icons/react';
 import { TicketDashboardLayout } from './components/TicketDashboardLayout/TicketDashboardLayout';
+import { TicketDetail } from './components/TicketDetail/TicketDetail';
 import { TicketList } from './components/TicketList/TicketList';
 import { tickets } from './tickets';
 import type { TicketStatusFilter } from './ticket.types';
@@ -222,7 +223,10 @@ export function TicketDashboard() {
           </article>
         </section>
 
-        <TicketDashboardLayout sidebar={sidebar}>
+        <TicketDashboardLayout
+          sidebar={sidebar}
+          detail={<TicketDetail ticket={selectedTicket ?? null} />}
+        >
           {queue}
         </TicketDashboardLayout>
       </main>
