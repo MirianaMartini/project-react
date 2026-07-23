@@ -23,3 +23,10 @@ export type Ticket = {
 
 export type TicketStatusFilter = TicketStatus | 'tutti';
 
+export type TicketFiltersValue = {
+  query: string;
+  status: TicketStatusFilter;
+};
+
+export type LoadStatus = 'idle' | 'loading' | 'success' | 'error';
+

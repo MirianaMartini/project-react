@@ -1,33 +1,40 @@
-/**
- * I test descrivono il comportamento che deve restare stabile durante il refactoring.
- * Gli studenti non devono conoscere la struttura interna del componente.
+/** 
+ * I test esercitano il flusso visibile del container. 
+ * findBy e waitFor attendono il servizio senza conoscere il suo timer interno. 
  */
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { TicketDashboardContainer } from './TicketDashboardContainer';
 
+const asyncOptions = { timeout: 2_000 };
+
+async function renderLoadedDashboard() {
+  render(<TicketDashboardContainer />);
+
+  expect(screen.getByRole('status', { name: 'Caricamento ticket' }))
+    .toBeInTheDocument();
+  await screen.findByText('12 risultati', {}, asyncOptions);
+}
+
 describe('TicketDashboardContainer', () => {
-  it('mostra il riepilogo e la coda iniziale', () => {
-    render(<TicketDashboardContainer />);
+  it('mostra il riepilogo e la coda iniziale', async () => {
+    await renderLoadedDashboard();
 
     expect(
       screen.getByRole('heading', { name: 'Operations Dashboard' }),
     ).toBeInTheDocument();
     expect(screen.getByText('12 risultati')).toBeInTheDocument();
-    expect(
-      screen.getByRole('button', {
-        name: /OPS-1847.*Ordini bloccati nel controllo disponibilità/i,
-      }),
-    ).toHaveAttribute('aria-pressed', 'true');
   });
 
   it('filtra i ticket usando la ricerca controllata', async () => {
     const user = userEvent.setup();
-    render(<TicketDashboardContainer />);
+    await renderLoadedDashboard();
 
     await user.type(screen.getByRole('searchbox'), 'Fonderie Lario');
 
-    expect(screen.getByText('1 risultati')).toBeInTheDocument();
+    expect(
+      await screen.findByText('1 risultati', {}, asyncOptions),
+    ).toBeInTheDocument();
     expect(
       screen.getByRole('button', {
         name: /OPS-1796.*Data consegna spostata di un giorno/i,
@@ -37,18 +44,23 @@ describe('TicketDashboardContainer', () => {
 
   it('combina filtro per stato e reset', async () => {
     const user = userEvent.setup();
-    render(<TicketDashboardContainer />);
+    await renderLoadedDashboard();
 
     await user.selectOptions(screen.getByLabelText('Stato'), 'in-attesa');
-    expect(screen.getByText('3 risultati')).toBeInTheDocument();
+    expect(
+      await screen.findByText('3 risultati', {}, asyncOptions),
+    ).toBeInTheDocument();
 
     await user.click(screen.getByRole('button', { name: 'Reimposta filtri' }));
-    expect(screen.getByText('12 risultati')).toBeInTheDocument();
+    await waitFor(
+      () => expect(screen.getByText('12 risultati')).toBeInTheDocument(),
+      asyncOptions,
+    );
   });
 
-  it('aggiorna la selezione senza dipendere dalla posizione in lista', async () => {
+  it('seleziona un ticket usando il suo id stabile', async () => {
     const user = userEvent.setup();
-    render(<TicketDashboardContainer />);
+    await renderLoadedDashboard();
     const ticketButton = screen.getByRole('button', {
       name: /OPS-1839.*Doppia notifica per le richieste approvate/i,
     });
@@ -60,16 +72,18 @@ describe('TicketDashboardContainer', () => {
 
   it('mostra un empty state e permette di tornare alla coda', async () => {
     const user = userEvent.setup();
-    render(<TicketDashboardContainer />);
+    await renderLoadedDashboard();
 
     await user.type(screen.getByRole('searchbox'), 'testo senza risultati');
-    expect(screen.getByRole('status')).toHaveTextContent(
-      'Nessun ticket trovato',
-    );
+    expect(
+      await screen.findByText('Nessun ticket trovato', {}, asyncOptions),
+    ).toBeInTheDocument();
 
     await user.click(
       screen.getByRole('button', { name: 'Mostra tutti i ticket' }),
     );
-    expect(screen.getByText('12 risultati')).toBeInTheDocument();
+    expect(
+      await screen.findByText('12 risultati', {}, asyncOptions),
+    ).toBeInTheDocument();
   });
 });

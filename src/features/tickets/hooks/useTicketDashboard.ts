@@ -1,44 +1,25 @@
-/**
- * Il hook possiede lo stato UI e calcola i valori derivati.
- * L'array arriva come dipendenza, quindi il hook non importa fixture.
- */
+/** Il hook di dominio compone stato UI e accesso dati. */
 import { useState } from 'react';
-import type { Ticket, TicketStatusFilter } from '../ticket.types';
+import type { TicketStatusFilter } from '../ticket.types';
+import type { TicketService } from '../services/TicketService';
+import { useTickets } from './useTickets';
 
-export function useTicketDashboard(allTickets: Ticket[]) {
+export function useTicketDashboard(service: TicketService) {
   const [query, setQuery] = useState('');
   const [statusFilter, setStatusFilter] =
     useState<TicketStatusFilter>('tutti');
-  const [selectedTicketId, setSelectedTicketId] = useState<string | null>(
-    allTickets[0]?.id ?? null,
-  );
-
-  const normalizedQuery = query.trim().toLocaleLowerCase('it-IT');
-  const visibleTickets = allTickets.filter((ticket) => {
-    const matchesStatus =
-      statusFilter === 'tutti' || ticket.status === statusFilter;
-    const searchableText = [
-      ticket.id,
-      ticket.title,
-      ticket.customer,
-      ticket.assignee,
-      ticket.description,
-    ]
-      .join(' ')
-      .toLocaleLowerCase('it-IT');
-
-    return matchesStatus && searchableText.includes(normalizedQuery);
-  });
+  const [selectedTicketId, setSelectedTicketId] = useState<string | null>(null);
+  const remote = useTickets(query, statusFilter, service);
 
   const selectedTicket =
-    allTickets.find((ticket) => ticket.id === selectedTicketId) ?? null;
+    remote.tickets.find((ticket) => ticket.id === selectedTicketId) ?? null;
   const summary = {
-    total: allTickets.length,
-    open: allTickets.filter((ticket) => ticket.status !== 'risolto').length,
-    urgent: allTickets.filter(
+    total: remote.tickets.length,
+    open: remote.tickets.filter((ticket) => ticket.status !== 'risolto').length,
+    urgent: remote.tickets.filter(
       (ticket) => ticket.priority === 'critica' || ticket.priority === 'alta',
     ).length,
-    waiting: allTickets.filter((ticket) => ticket.status === 'in-attesa').length,
+    waiting: remote.tickets.filter((ticket) => ticket.status === 'in-attesa').length,
   };
 
   function resetFilters() {
@@ -51,8 +32,11 @@ export function useTicketDashboard(allTickets: Ticket[]) {
     statusFilter,
     selectedTicketId,
     selectedTicket,
-    visibleTickets,
+    tickets: remote.tickets,
     summary,
+    loadStatus: remote.status,
+    error: remote.error,
+    retry: remote.retry,
     setQuery,
     setStatusFilter,
     selectTicket: setSelectedTicketId,

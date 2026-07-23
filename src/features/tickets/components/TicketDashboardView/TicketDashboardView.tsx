@@ -1,13 +1,17 @@
-/** La view compone componenti presentazionali e non conosce le fixture. */
+/** La view compone la UI usando soltanto dati, stati e callback ricevuti. */
 import {
   BuildingsIcon,
   CheckCircleIcon,
   ClockIcon,
-  MagnifyingGlassIcon,
   TicketIcon,
   WarningIcon,
 } from '@phosphor-icons/react';
-import type { Ticket, TicketStatusFilter } from '../../ticket.types';
+import type {
+  LoadStatus,
+  Ticket,
+  TicketStatusFilter,
+} from '../../ticket.types';
+import { StatePanel } from '../StatePanel/StatePanel';
 import { TicketDashboardLayout } from '../TicketDashboardLayout/TicketDashboardLayout';
 import { TicketDetail } from '../TicketDetail/TicketDetail';
 import { TicketFilters } from '../TicketFilters/TicketFilters';
@@ -21,10 +25,13 @@ type TicketDashboardViewProps = {
   query: string;
   statusFilter: TicketStatusFilter;
   summary: { total: number; open: number; urgent: number; waiting: number };
+  loadStatus: LoadStatus;
+  error: string | null;
   onQueryChange: (query: string) => void;
   onStatusChange: (status: TicketStatusFilter) => void;
   onSelectTicket: (ticketId: string) => void;
   onResetFilters: () => void;
+  onRetry: () => void;
 };
 
 export function TicketDashboardView({
@@ -34,10 +41,13 @@ export function TicketDashboardView({
   query,
   statusFilter,
   summary,
+  loadStatus,
+  error,
   onQueryChange,
   onStatusChange,
   onSelectTicket,
   onResetFilters,
+  onRetry,
 }: TicketDashboardViewProps) {
   const sidebar = (
     <TicketFilters
@@ -49,7 +59,6 @@ export function TicketDashboardView({
       onReset={onResetFilters}
     />
   );
-  const detail = <TicketDetail ticket={selectedTicket} />;
 
   return (
     <div className="ticket-dashboard-view">
@@ -63,13 +72,15 @@ export function TicketDashboardView({
         </a>
         <span>Ambiente didattico</span>
       </header>
+
       <main id="main-content" className="ticket-dashboard-view__main">
         <header className="ticket-dashboard-view__heading">
           <div>
             <p>Coda assistenza</p>
             <h1>Operations Dashboard</h1>
             <span>
-              Controlla le richieste aperte e assegna la priorità al prossimo intervento.
+              Controlla le richieste aperte e assegna la priorità al prossimo
+              intervento.
             </span>
           </div>
           <div aria-live="polite">
@@ -77,6 +88,7 @@ export function TicketDashboardView({
             <strong>{selectedTicket?.id ?? 'Nessuno'}</strong>
           </div>
         </header>
+
         <section
           className="ticket-dashboard-view__metrics"
           aria-label="Riepilogo ticket"
@@ -102,7 +114,11 @@ export function TicketDashboardView({
             <strong>{summary.waiting}</strong>
           </article>
         </section>
-        <TicketDashboardLayout sidebar={sidebar} detail={detail}>
+
+        <TicketDashboardLayout
+          sidebar={sidebar}
+          detail={<TicketDetail ticket={selectedTicket} />}
+        >
           <section
             className="ticket-dashboard-view__queue"
             aria-labelledby="queue-title"
@@ -112,24 +128,29 @@ export function TicketDashboardView({
                 <h2 id="queue-title">Coda ticket</h2>
                 <p>Ordine di aggiornamento, dal più recente.</p>
               </div>
-              <span>{tickets.length} risultati</span>
+              <span aria-live="polite">
+                {tickets.length} risultati
+              </span>
             </header>
-            {tickets.length > 0 ? (
+
+            {loadStatus === 'loading' ? <StatePanel state="loading" /> : null}
+            {loadStatus === 'error' ? (
+              <StatePanel
+                state="error"
+                message={error ?? 'Errore imprevisto durante il caricamento.'}
+                onRetry={onRetry}
+              />
+            ) : null}
+            {loadStatus === 'success' && tickets.length === 0 ? (
+              <StatePanel state="empty" onReset={onResetFilters} />
+            ) : null}
+            {loadStatus === 'success' && tickets.length > 0 ? (
               <TicketList
                 tickets={tickets}
                 selectedTicketId={selectedTicketId}
                 onSelect={onSelectTicket}
               />
-            ) : (
-              <div className="ticket-dashboard-view__empty" role="status">
-                <MagnifyingGlassIcon size={28} aria-hidden="true" />
-                <h3>Nessun ticket trovato</h3>
-                <p>Modifica la ricerca oppure reimposta i filtri.</p>
-                <button type="button" onClick={onResetFilters}>
-                  Mostra tutti i ticket
-                </button>
-              </div>
-            )}
+            ) : null}
           </section>
         </TicketDashboardLayout>
       </main>
