@@ -19,6 +19,8 @@ export function createLocalTicketService({
 
   return {
     list(filters: TicketFiltersValue, signal: AbortSignal) {
+      //console.count('TicketService.list');
+
       return new Promise((resolve, reject) => {
         if (signal.aborted) {
           reject(new DOMException('Richiesta annullata', 'AbortError'));

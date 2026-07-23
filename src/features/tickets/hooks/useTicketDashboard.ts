@@ -1,7 +1,8 @@
-/** Il hook di dominio compone stato UI e accesso dati. */
+/** Il hook di dominio compone stato UI, debounce e accesso dati. */
 import { useState } from 'react';
 import type { TicketStatusFilter } from '../ticket.types';
 import type { TicketService } from '../services/TicketService';
+import { useDebouncedValue } from './useDebouncedValue';
 import { useTickets } from './useTickets';
 
 export function useTicketDashboard(service: TicketService) {
@@ -9,7 +10,12 @@ export function useTicketDashboard(service: TicketService) {
   const [statusFilter, setStatusFilter] =
     useState<TicketStatusFilter>('tutti');
   const [selectedTicketId, setSelectedTicketId] = useState<string | null>(null);
-  const remote = useTickets(query, statusFilter, service);
+  
+  // Applichiamo il debounce di 350ms al valore della query
+  const debouncedQuery = useDebouncedValue(query, 350);
+  
+  // Passiamo a useTickets la query stabilizzata
+  const remote = useTickets(debouncedQuery, statusFilter, service);
 
   const selectedTicket =
     remote.tickets.find((ticket) => ticket.id === selectedTicketId) ?? null;
@@ -36,6 +42,8 @@ export function useTicketDashboard(service: TicketService) {
     summary,
     loadStatus: remote.status,
     error: remote.error,
+    // L'utente sta cercando se ha digitato qualcosa non ancora sincronizzato o se la richiesta è in corso
+    isSearching: query !== debouncedQuery || remote.status === 'loading',
     retry: remote.retry,
     setQuery,
     setStatusFilter,

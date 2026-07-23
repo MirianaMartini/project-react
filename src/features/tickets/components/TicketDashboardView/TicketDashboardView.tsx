@@ -27,6 +27,7 @@ type TicketDashboardViewProps = {
   summary: { total: number; open: number; urgent: number; waiting: number };
   loadStatus: LoadStatus;
   error: string | null;
+  isSearching: boolean;
   onQueryChange: (query: string) => void;
   onStatusChange: (status: TicketStatusFilter) => void;
   onSelectTicket: (ticketId: string) => void;
@@ -43,6 +44,7 @@ export function TicketDashboardView({
   summary,
   loadStatus,
   error,
+  isSearching,
   onQueryChange,
   onStatusChange,
   onSelectTicket,
@@ -129,7 +131,7 @@ export function TicketDashboardView({
                 <p>Ordine di aggiornamento, dal più recente.</p>
               </div>
               <span aria-live="polite">
-                {tickets.length} risultati
+                {isSearching ? 'Ricerca in corso' : `${tickets.length} risultati`}
               </span>
             </header>
 

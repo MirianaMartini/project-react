@@ -22,6 +22,7 @@ export function TicketDashboardContainer() {
       summary={dashboard.summary}
       loadStatus={dashboard.loadStatus}
       error={dashboard.error}
+      isSearching={dashboard.isSearching}
       onQueryChange={dashboard.setQuery}
       onStatusChange={dashboard.setStatusFilter}
       onSelectTicket={dashboard.selectTicket}
