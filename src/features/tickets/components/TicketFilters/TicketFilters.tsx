@@ -1,9 +1,10 @@
-/** TicketFilters rende controlli controllati e non conserva copie locali. */
+/** TicketFilters rende controlli controllati e delega le azioni al chiamante. */
 import {
   ArrowClockwiseIcon,
   FunnelSimpleIcon,
   MagnifyingGlassIcon,
 } from '@phosphor-icons/react';
+import { Button } from '../../../../shared/components/Button/Button';
 import type { TicketStatusFilter } from '../../ticket.types';
 import './TicketFilters.scss';
 
@@ -59,10 +60,16 @@ export function TicketFilters({
           <option value="risolto">Risolto</option>
         </select>
       </label>
-      <button type="button" onClick={onReset} disabled={!hasActiveFilters}>
-        <ArrowClockwiseIcon size={18} weight="bold" aria-hidden="true" />
+      <Button
+        variant="secondary"
+        icon={
+          <ArrowClockwiseIcon size={18} weight="bold" aria-hidden="true" />
+        }
+        onClick={onReset}
+        disabled={!hasActiveFilters}
+      >
         Reimposta filtri
-      </button>
+      </Button>
       <p className="ticket-filters__result">
         <strong>{resultCount}</strong> ticket nella vista corrente
       </p>

@@ -5,3 +5,4 @@ export type {
   TicketStatus,
   TicketStatusFilter,
 } from './ticket.types';
+export type { TicketService } from './services/TicketService';

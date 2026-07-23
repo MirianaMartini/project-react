@@ -1,9 +1,10 @@
-/** StatePanel presenta i tre esiti che sostituiscono la lista. */
+/** StatePanel presenta loading, errore ed empty state con un contratto univoco. */
 import {
   ArrowClockwiseIcon,
   MagnifyingGlassIcon,
   WarningCircleIcon,
 } from '@phosphor-icons/react';
+import { Button } from '../../../../shared/components/Button/Button';
 import './StatePanel.scss';
 
 type StatePanelProps =
@@ -28,10 +29,14 @@ export function StatePanel(props: StatePanelProps) {
         <WarningCircleIcon size={30} weight="duotone" aria-hidden="true" />
         <h3>Non posso caricare i ticket</h3>
         <p>{props.message}</p>
-        <button type="button" onClick={props.onRetry}>
-          <ArrowClockwiseIcon size={18} weight="bold" aria-hidden="true" />
+        <Button
+          icon={
+            <ArrowClockwiseIcon size={18} weight="bold" aria-hidden="true" />
+          }
+          onClick={props.onRetry}
+        >
           Riprova
-        </button>
+        </Button>
       </div>
     );
   }
@@ -41,7 +46,7 @@ export function StatePanel(props: StatePanelProps) {
       <MagnifyingGlassIcon size={30} weight="duotone" aria-hidden="true" />
       <h3>Nessun ticket trovato</h3>
       <p>Modifica la ricerca oppure reimposta i filtri.</p>
-      <button type="button" onClick={props.onReset}>Mostra tutti i ticket</button>
+      <Button onClick={props.onReset}>Mostra tutti i ticket</Button>
     </div>
   );
 }
